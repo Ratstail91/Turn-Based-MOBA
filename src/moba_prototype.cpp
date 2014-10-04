@@ -36,8 +36,14 @@ MobaPrototype::MobaPrototype() {
 	gridTiles.SetClipW(32);
 	gridTiles.SetClipH(32);
 
+	tokenTiles.LoadSurface(config["dir.graphics"] + "tokens.bmp");
+	tokenTiles.SetClipW(32);
+	tokenTiles.SetClipH(32);
+
 	//init the grid
 	memset(grid, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
+	memset(tokens, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
+
 }
 
 MobaPrototype::~MobaPrototype() {
@@ -68,6 +74,16 @@ void MobaPrototype::Render(SDL_Surface* const screen) {
 			gridTiles.DrawTo(screen, camera.position.x + i * TILE_WIDTH, camera.position.y + j * TILE_HEIGHT);
 		}
 	}
+
+	//draw the tokens (0 = empty)
+	for (int i = 0; i < GRID_WIDTH; ++i) {
+		for (int j = 0; j < GRID_HEIGHT; ++j) {
+			if (tokens[i][j]) {
+				tokenTiles.SetClipX((tokens[i][j] - 1) * 32);
+				tokenTiles.DrawTo(screen, camera.position.x + i * TILE_WIDTH, camera.position.y + j * TILE_HEIGHT);
+			}
+		}
+	}
 }
 
 //-------------------------
@@ -91,6 +107,17 @@ void MobaPrototype::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 		grid[i][j] += 1;
 		if (grid[i][j] >= TILE_TYPES) {
 			grid[i][j] = 0;
+		}
+	}
+
+	//change the tokens
+	if (keyState[SDLK_LSHIFT] || keyState[SDLK_RSHIFT]) {
+		int i = (button.x - camera.position.x)  / TILE_WIDTH;
+		int j = (button.y - camera.position.y)  / TILE_HEIGHT;
+
+		tokens[i][j] += 1;
+		if (tokens[i][j] > TOKEN_TYPES) {
+			tokens[i][j] = 0;
 		}
 	}
 }

@@ -33,6 +33,8 @@ constexpr int TILE_TYPES = 3;
 constexpr int TILE_WIDTH = 32;
 constexpr int TILE_HEIGHT = 32;
 
+constexpr int TOKEN_TYPES = 10;
+
 class MobaPrototype : public BaseScene {
 public:
 	//Public access members
@@ -57,12 +59,16 @@ protected:
 	Uint8* keyState = SDL_GetKeyState(nullptr); //shortcut
 
 	Image gridTiles;
+	Image tokenTiles;
+
 	struct {
 		struct {
 			int x = 0, y = 0;
 		}position;
 	}camera;
+
 	int grid[GRID_WIDTH][GRID_HEIGHT];
+	int tokens[GRID_WIDTH][GRID_HEIGHT];
 };
 
 #endif
