@@ -28,14 +28,31 @@
 
 #include <string>
 
+//constants
 constexpr int GRID_WIDTH = 40;
 constexpr int GRID_HEIGHT = 40;
 
-constexpr int TILE_TYPES = 3;
+constexpr int TILE_TYPES = 10;
 constexpr int TILE_WIDTH = 32;
 constexpr int TILE_HEIGHT = 32;
 
 constexpr int TOKEN_TYPES = 10;
+
+//utility structures
+struct Camera {
+	struct {
+		int x = 0, y = 0;
+	}position;
+};
+
+struct Cursor {
+	enum Mode {
+		TERRAIN = 1,
+		STRUCTURES = 2,
+	}mode;
+
+	int selection = 0;
+};
 
 class MobaPrototype : public BaseScene {
 public:
@@ -67,14 +84,11 @@ protected:
 	Image gridTiles;
 	Image tokenTiles;
 
-	struct {
-		struct {
-			int x = 0, y = 0;
-		}position;
-	}camera;
-
 	int grid[GRID_WIDTH][GRID_HEIGHT];
 	int tokens[GRID_WIDTH][GRID_HEIGHT];
+
+	Camera camera;
+	Cursor cursor;
 };
 
 #endif

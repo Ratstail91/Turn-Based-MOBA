@@ -94,6 +94,23 @@ void MobaPrototype::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void MobaPrototype::MouseMotion(SDL_MouseMotionEvent const& motion) {
+	//placement
+	if (motion.state & SDL_BUTTON_LMASK) {
+		int i = (motion.x - camera.position.x)  / TILE_WIDTH;
+		int j = (motion.y - camera.position.y)  / TILE_HEIGHT;
+
+		//NOTE: duplicate code from MouseButtonDown()
+		switch(cursor.mode) {
+			case Cursor::Mode::TERRAIN:
+				grid[i][j] = cursor.selection;
+			break;
+
+			case Cursor::Mode::STRUCTURES:
+				tokens[i][j] = cursor.selection;
+			break;
+		}
+	}
+
 	//camera movement
 	if (motion.state & SDL_BUTTON_RMASK) {
 		camera.position.x += motion.xrel;
@@ -102,25 +119,18 @@ void MobaPrototype::MouseMotion(SDL_MouseMotionEvent const& motion) {
 }
 
 void MobaPrototype::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//change the grid tiles
-	if (keyState[SDLK_TAB]) {
+	if (button.button == SDL_BUTTON_LEFT) {
 		int i = (button.x - camera.position.x)  / TILE_WIDTH;
 		int j = (button.y - camera.position.y)  / TILE_HEIGHT;
 
-		grid[i][j] += 1;
-		if (grid[i][j] >= TILE_TYPES) {
-			grid[i][j] = 0;
-		}
-	}
+		switch(cursor.mode) {
+			case Cursor::Mode::TERRAIN:
+				grid[i][j] = cursor.selection;
+			break;
 
-	//change the tokens
-	if (keyState[SDLK_LSHIFT] || keyState[SDLK_RSHIFT]) {
-		int i = (button.x - camera.position.x)  / TILE_WIDTH;
-		int j = (button.y - camera.position.y)  / TILE_HEIGHT;
-
-		tokens[i][j] += 1;
-		if (tokens[i][j] > TOKEN_TYPES) {
-			tokens[i][j] = 0;
+			case Cursor::Mode::STRUCTURES:
+				tokens[i][j] = cursor.selection;
+			break;
 		}
 	}
 }
@@ -130,22 +140,53 @@ void MobaPrototype::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void MobaPrototype::KeyDown(SDL_KeyboardEvent const& key) {
-	//hotkeys
+	//control key: hotkeys
+	if (key.keysym.mod & KMOD_CTRL) {
+		switch(key.keysym.sym) {
+			case SDLK_l:
+				LoadMap(ConfigUtility::GetSingleton()["dir.maps"] + ConfigUtility::GetSingleton()["map"]);
+			break;
+
+			case SDLK_s:
+				SaveMap(ConfigUtility::GetSingleton()["dir.maps"] + ConfigUtility::GetSingleton()["map"]);
+			break;
+
+			case SDLK_n:
+				//clear the map
+				memset(grid, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
+				memset(tokens, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
+			break;
+		}
+
+		return;
+	}
+
+	//numberical input
+	if (key.keysym.sym >=  '0' && key.keysym.sym <= '9') {
+		//shift key: terrain control
+		if (key.keysym.mod & KMOD_SHIFT) {
+			cursor.mode = Cursor::Mode::TERRAIN;
+			cursor.selection = key.keysym.sym - '0';
+		}
+		//no shift key: structure control
+		else {
+			cursor.mode = Cursor::Mode::STRUCTURES;
+			cursor.selection = key.keysym.sym - '0' + 1;
+		}
+
+		return;
+	}
+
+	//default hotkeys
 	switch (key.keysym.sym) {
 		case SDLK_ESCAPE:
 			QuitEvent();
 		break;
 
-		case SDLK_l:
-			if (key.keysym.mod & KMOD_CTRL) {
-				LoadMap(ConfigUtility::GetSingleton()["map"]);
-			}
-		break;
-
-		case SDLK_s:
-			if (key.keysym.mod & KMOD_CTRL) {
-				SaveMap(ConfigUtility::GetSingleton()["map"]);
-			}
+		//NOTE: clear the structures
+		case SDLK_SPACE:
+			cursor.mode = Cursor::Mode::STRUCTURES;
+			cursor.selection = key.keysym.sym - '0' + 1;
 		break;
 	}
 }
