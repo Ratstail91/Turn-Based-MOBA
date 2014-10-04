@@ -47,10 +47,18 @@ MobaPrototype::MobaPrototype() {
 	memset(grid, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
 	memset(tokens, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
 
+	//
+	try {
+		LoadMap(ConfigUtility::GetSingleton()["dir.maps"] + "tmp.txt");
+	}
+	catch(...) {
+		//EMPTY: Ignore this exception if there's no temp file
+	}
 }
 
 MobaPrototype::~MobaPrototype() {
 	//
+	SaveMap(ConfigUtility::GetSingleton()["dir.maps"] + "tmp.txt");
 }
 
 //-------------------------
@@ -175,6 +183,11 @@ void MobaPrototype::KeyDown(SDL_KeyboardEvent const& key) {
 				//clear the map
 				memset(grid, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
 				memset(tokens, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
+			break;
+
+			case SDLK_p:
+				//take a screenshot
+				SDL_SaveBMP(GetScreen(), (ConfigUtility::GetSingleton()["dir.screenshots"] + "screen.bmp").c_str());
 			break;
 		}
 

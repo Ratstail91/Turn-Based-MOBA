@@ -59,7 +59,12 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//Setup the screen
 	//-------------------------
 
-	BaseScene::SetScreen(800, 600);
+	int w = config.Int("screen.w");
+	int h = config.Int("screen.h");
+	int f = config.Bool("screen.f") ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF;
+
+	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f);
+
 	std::cout << "Initialized the screen" << std::endl;
 
 	//-------------------------
