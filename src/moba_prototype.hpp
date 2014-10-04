@@ -38,6 +38,8 @@ constexpr int TILE_HEIGHT = 32;
 
 constexpr int TOKEN_TYPES = 10;
 
+constexpr int MAP_FORMAT = 20141004;
+
 //utility structures
 struct Camera {
 	struct {

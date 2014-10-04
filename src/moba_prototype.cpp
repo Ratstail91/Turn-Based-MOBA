@@ -241,6 +241,15 @@ void MobaPrototype::LoadMap(std::string fname) {
 		throw(std::runtime_error(err.str()));
 	}
 
+	//check the version
+	int format;
+	is >> format;
+	if (format != MAP_FORMAT) {
+		std::ostringstream err;
+		err << "Map file \'" << fname << "\' is an incorrect format, received " << format << ", expected " << MAP_FORMAT << std::endl;
+		throw(std::runtime_error(err.str()));
+	}
+
 	//load the grid
 	for (int i = 0; i < GRID_WIDTH; ++i) {
 		for (int j = 0; j < GRID_HEIGHT; ++j) {
@@ -266,6 +275,9 @@ void MobaPrototype::SaveMap(std::string fname) {
 		err << "Failed to save file: " << fname << std::endl;
 		throw(std::runtime_error(err.str()));
 	}
+
+	//save the format
+	os << MAP_FORMAT << std::endl;
 
 	//save the grid
 	for (int i = 0; i < GRID_WIDTH; ++i) {
