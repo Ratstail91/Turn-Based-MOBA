@@ -251,15 +251,15 @@ void MobaPrototype::LoadMap(std::string fname) {
 	}
 
 	//load the grid
-	for (int i = 0; i < GRID_WIDTH; ++i) {
-		for (int j = 0; j < GRID_HEIGHT; ++j) {
+	for (int j = 0; j < GRID_HEIGHT; ++j) {
+		for (int i = 0; i < GRID_WIDTH; ++i) {
 			is >> grid[i][j];
 		}
 	}
 
 	//load the tokens
-	for (int i = 0; i < GRID_WIDTH; ++i) {
-		for (int j = 0; j < GRID_HEIGHT; ++j) {
+	for (int j = 0; j < GRID_HEIGHT; ++j) {
+		for (int i = 0; i < GRID_WIDTH; ++i) {
 			is >> tokens[i][j];
 		}
 	}
@@ -280,8 +280,8 @@ void MobaPrototype::SaveMap(std::string fname) {
 	os << MAP_FORMAT << std::endl;
 
 	//save the grid
-	for (int i = 0; i < GRID_WIDTH; ++i) {
-		for (int j = 0; j < GRID_HEIGHT; ++j) {
+	for (int j = 0; j < GRID_HEIGHT; ++j) {	
+		for (int i = 0; i < GRID_WIDTH; ++i) {
 			os << grid[i][j] << " ";
 		}
 		os << std::endl;
@@ -290,8 +290,8 @@ void MobaPrototype::SaveMap(std::string fname) {
 	os << std::endl;
 
 	//save the tokens
-	for (int i = 0; i < GRID_WIDTH; ++i) {
-		for (int j = 0; j < GRID_HEIGHT; ++j) {
+	for (int j = 0; j < GRID_HEIGHT; ++j) {
+		for (int i = 0; i < GRID_WIDTH; ++i) {
 			os << tokens[i][j] << " ";
 		}
 		os << std::endl;
