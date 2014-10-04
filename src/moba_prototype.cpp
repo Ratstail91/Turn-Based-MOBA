@@ -24,6 +24,9 @@
 #include "config_utility.hpp"
 
 #include <cstring>
+#include <fstream>
+#include <stdexcept>
+#include <sstream>
 
 //-------------------------
 //Public access members
@@ -127,14 +130,86 @@ void MobaPrototype::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void MobaPrototype::KeyDown(SDL_KeyboardEvent const& key) {
-	//hitkeys
+	//hotkeys
 	switch (key.keysym.sym) {
 		case SDLK_ESCAPE:
 			QuitEvent();
+		break;
+
+		case SDLK_l:
+			if (key.keysym.mod & KMOD_CTRL) {
+				LoadMap(ConfigUtility::GetSingleton()["map"]);
+			}
+		break;
+
+		case SDLK_s:
+			if (key.keysym.mod & KMOD_CTRL) {
+				SaveMap(ConfigUtility::GetSingleton()["map"]);
+			}
 		break;
 	}
 }
 
 void MobaPrototype::KeyUp(SDL_KeyboardEvent const& key) {
 	//
+}
+
+//-------------------------
+//Event handlers
+//-------------------------
+
+void MobaPrototype::LoadMap(std::string fname) {
+	std::ifstream is(fname);
+
+	if (!is.is_open()) {
+		std::ostringstream err;
+		err << "Failed to load file: " << fname << std::endl;
+		throw(std::runtime_error(err.str()));
+	}
+
+	//load the grid
+	for (int i = 0; i < GRID_WIDTH; ++i) {
+		for (int j = 0; j < GRID_HEIGHT; ++j) {
+			is >> grid[i][j];
+		}
+	}
+
+	//load the tokens
+	for (int i = 0; i < GRID_WIDTH; ++i) {
+		for (int j = 0; j < GRID_HEIGHT; ++j) {
+			is >> tokens[i][j];
+		}
+	}
+
+	is.close();
+}
+
+void MobaPrototype::SaveMap(std::string fname) {
+	std::ofstream os(fname);
+
+	if (!os.is_open()) {
+		std::ostringstream err;
+		err << "Failed to save file: " << fname << std::endl;
+		throw(std::runtime_error(err.str()));
+	}
+
+	//save the grid
+	for (int i = 0; i < GRID_WIDTH; ++i) {
+		for (int j = 0; j < GRID_HEIGHT; ++j) {
+			os << grid[i][j] << " ";
+		}
+		os << std::endl;
+	}
+
+	os << std::endl;
+
+	//save the tokens
+	for (int i = 0; i < GRID_WIDTH; ++i) {
+		for (int j = 0; j < GRID_HEIGHT; ++j) {
+			os << tokens[i][j] << " ";
+		}
+		os << std::endl;
+	}
+
+	os.close();
 }

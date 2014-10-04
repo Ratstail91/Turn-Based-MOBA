@@ -26,6 +26,8 @@
 
 #include "image.hpp"
 
+#include <string>
+
 constexpr int GRID_WIDTH = 40;
 constexpr int GRID_HEIGHT = 40;
 
@@ -54,6 +56,10 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	//utility functions
+	void LoadMap(std::string fname);
+	void SaveMap(std::string fname);
 
 	//members
 	Uint8* keyState = SDL_GetKeyState(nullptr); //shortcut
