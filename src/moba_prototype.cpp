@@ -96,6 +96,16 @@ void MobaPrototype::Render(SDL_Surface* const screen) {
 void MobaPrototype::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	//placement
 	if (motion.state & SDL_BUTTON_LMASK) {
+		//BUGFIX: Out of bounds check
+		if (motion.x < camera.position.x ||
+			motion.y < camera.position.y ||
+			motion.x >= camera.position.x + TILE_WIDTH * GRID_WIDTH ||
+			motion.y >= camera.position.y + TILE_HEIGHT * GRID_HEIGHT
+			)
+		{
+			return;
+		}
+
 		int i = (motion.x - camera.position.x)  / TILE_WIDTH;
 		int j = (motion.y - camera.position.y)  / TILE_HEIGHT;
 
@@ -120,6 +130,16 @@ void MobaPrototype::MouseMotion(SDL_MouseMotionEvent const& motion) {
 
 void MobaPrototype::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	if (button.button == SDL_BUTTON_LEFT) {
+		//BUGFIX: Out of bounds check
+		if (button.x < camera.position.x ||
+			button.y < camera.position.y ||
+			button.x >= camera.position.x + TILE_WIDTH * GRID_WIDTH ||
+			button.y >= camera.position.y + TILE_HEIGHT * GRID_HEIGHT
+			)
+		{
+			return;
+		}
+
 		int i = (button.x - camera.position.x)  / TILE_WIDTH;
 		int j = (button.y - camera.position.y)  / TILE_HEIGHT;
 
