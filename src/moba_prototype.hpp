@@ -26,6 +26,13 @@
 
 #include "image.hpp"
 
+constexpr int GRID_WIDTH = 40;
+constexpr int GRID_HEIGHT = 40;
+
+constexpr int TILE_TYPES = 3;
+constexpr int TILE_WIDTH = 32;
+constexpr int TILE_HEIGHT = 32;
+
 class MobaPrototype : public BaseScene {
 public:
 	//Public access members
@@ -45,6 +52,17 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	//members
+	Uint8* keyState = SDL_GetKeyState(nullptr); //shortcut
+
+	Image gridTiles;
+	struct {
+		struct {
+			int x = 0, y = 0;
+		}position;
+	}camera;
+	int grid[GRID_WIDTH][GRID_HEIGHT];
 };
 
 #endif

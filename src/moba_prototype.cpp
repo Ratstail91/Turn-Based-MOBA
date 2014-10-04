@@ -23,12 +23,21 @@
 
 #include "config_utility.hpp"
 
+#include <cstring>
+
 //-------------------------
 //Public access members
 //-------------------------
 
 MobaPrototype::MobaPrototype() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
+
+	gridTiles.LoadSurface(config["dir.graphics"] + "grid_tiles.bmp");
+	gridTiles.SetClipW(32);
+	gridTiles.SetClipH(32);
+
+	//init the grid
+	memset(grid, 0, sizeof(int) * GRID_WIDTH * GRID_HEIGHT);
 }
 
 MobaPrototype::~MobaPrototype() {
@@ -52,7 +61,13 @@ void MobaPrototype::FrameEnd() {
 }
 
 void MobaPrototype::Render(SDL_Surface* const screen) {
-	//
+	//draw the grid
+	for (int i = 0; i < GRID_WIDTH; ++i) {
+		for (int j = 0; j < GRID_HEIGHT; ++j) {
+			gridTiles.SetClipX(grid[i][j] * 32);
+			gridTiles.DrawTo(screen, camera.position.x + i * TILE_WIDTH, camera.position.y + j * TILE_HEIGHT);
+		}
+	}
 }
 
 //-------------------------
@@ -60,11 +75,24 @@ void MobaPrototype::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void MobaPrototype::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
+	//camera movement
+	if (motion.state & SDL_BUTTON_RMASK) {
+		camera.position.x += motion.xrel;
+		camera.position.y += motion.yrel;
+	}
 }
 
 void MobaPrototype::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
+	//change the grid tiles
+	if (keyState[SDLK_TAB]) {
+		int i = (button.x - camera.position.x)  / TILE_WIDTH;
+		int j = (button.y - camera.position.y)  / TILE_HEIGHT;
+
+		grid[i][j] += 1;
+		if (grid[i][j] >= TILE_TYPES) {
+			grid[i][j] = 0;
+		}
+	}
 }
 
 void MobaPrototype::MouseButtonUp(SDL_MouseButtonEvent const& button) {
@@ -72,7 +100,12 @@ void MobaPrototype::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void MobaPrototype::KeyDown(SDL_KeyboardEvent const& key) {
-	//
+	//hitkeys
+	switch (key.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+		break;
+	}
 }
 
 void MobaPrototype::KeyUp(SDL_KeyboardEvent const& key) {
